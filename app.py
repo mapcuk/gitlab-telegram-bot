@@ -60,6 +60,7 @@ def webhook():
     # json contains an attribute that differenciates between the types, see
     # https://docs.gitlab.com/ce/user/project/integrations/webhooks.html
     # for more infos
+    print(data)
     kind = data['object_kind']
     if kind == 'push':
         msg = generatePushMsg(data)
