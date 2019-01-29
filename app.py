@@ -4,15 +4,18 @@ import json
 from flask import Flask
 from flask import request
 from flask import jsonify
+from decouple import config
+
 from bot import Bot
 app = Flask(__name__)
+
 
 class GitlabBot(Bot):
     def __init__(self):
         try:
-            self.authmsg = open('authmsg').read().strip()
+            self.authmsg = config('AUTHMSG')
         except:
-            raise Exception("The authorization messsage file is invalid")
+            raise Exception("Can not read authorization messsage from ENV variable AUTHMSG")
 
         super(GitlabBot, self).__init__()
         self.chats = {}

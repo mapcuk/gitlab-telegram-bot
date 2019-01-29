@@ -3,14 +3,21 @@
 import time
 import requests
 from threading import Thread
+from decouple import config
+
+SOCKS_PROXY = config('SOCKS_PROXY')
+PROXIES = {
+    'http': SOCKS_PROXY,
+    'https': SOCKS_PROXY,
+}
 
 
 class Bot:
     def __init__(self):
         try:
-            self.token = open('token').read().split()[0]
+            self.token = config('TELEGRAM_TOKEN')
         except:
-            raise Exception("The token file is invalid")
+            raise Exception("Can no get get token from ENV variable TELEGRAM_TOKEN")
 
         self.api = 'https://api.telegram.org/bot%s/' % self.token
         try:
@@ -23,7 +30,7 @@ class Bot:
     def botq(self, method, params=None):
         url = self.api + method
         params = params if params else {}
-        return requests.post(url, params).json()
+        return requests.post(url, params, proxies=PROXIES).json()
 
     def msg_recv(self, msg):
         ''' method to override '''
@@ -65,7 +72,8 @@ class Bot:
     def reply(self, to, msg):
         if type(to) not in [int, str]:
             to = self.get_to_from_msg(to)
-        resp = self.botq('sendMessage', {'chat_id': to, 'text': msg, 'disable_web_page_preview': True, 'parse_mode': 'Markdown'})
+        resp = self.botq('sendMessage',
+                         {'chat_id': to, 'text': msg, 'disable_web_page_preview': True, 'parse_mode': 'Markdown'})
         return resp
 
     def run(self):
