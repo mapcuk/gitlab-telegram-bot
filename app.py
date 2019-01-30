@@ -116,6 +116,7 @@ def generateCommentMsg(data):
         msg = 'note to Issue'
     elif ntype == 'Snippet':
         msg = 'note on code snippet'
+    msg += '\nfrom {user}'.format(user=data['user']['name'])
     return msg
 
 
@@ -128,7 +129,14 @@ def generateWikiMsg(data):
 
 
 def generatePipelineMsg(data):
-    return 'new pipeline stuff'
+    build_info = ''
+    for build in data['builds']:
+        build_info += ' - {name}: {status}\n'.format(name=build['name'], status=build['status'])
+    return '{project} pipeline \U0001F680\nbranch: {branch}\nuser: {user}\n'.format(
+        project=data['project']['name'],
+        branch=data['object_attributes']['ref'],
+        user=data['user']['name']
+    ) + build_info
 
 
 def generateBuildMsg(data):
