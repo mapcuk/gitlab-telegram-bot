@@ -1,0 +1,41 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: gitlab-telegram
+  name: gitlab-telegram
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    app: gitlab-telegram
+    deploymentconfig: gitlab-telegram
+  strategy:
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: gitlab-telegram
+        deploymentconfig: gitlab-telegram
+    spec:
+      volumes:
+      - name: vol-chats
+        configMap:
+          name: gitlab-telegram
+      containers:
+      - name: gitlab-telegram
+        env:
+        - name: SOCKS_PROXY
+          value: socks5://tor.dev.svc:9050
+        - name: AUTHMSG
+          value: "see-pipeline"
+        envFrom:
+        - secretRef:
+            name: telegram
+        image: docker-registry.default.svc:5000/dev/gitlab-telegram-bot:0.3
+        volumeMounts:
+        - name: vol-chats
+          mountPath: /chats
+          subPath: chats
+
+

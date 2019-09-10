@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: gitlab-telegram
+  name: gitlab-telegram
+data:
+  chats: |
+    {"438865346": true, "52555724": true}
